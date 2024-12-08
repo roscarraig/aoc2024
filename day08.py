@@ -64,8 +64,8 @@ def __main__():
                     dx = x2 - x1
                     dy = y2 - y1
                     gcd = math.gcd(dx, dy)
-                    # dx /= gcd
-                    # dy /= gcd
+                    dx /= gcd
+                    dy /= gcd
                     tx = x1
                     ty = y1
                     while bounded(tx, ty, lx, ly):
