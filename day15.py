@@ -15,18 +15,22 @@ def print_map(grid):
         print(''.join(grid[j]))
 
 
-def move(grid, x, y, dir):
-    nx = x
-    ny = y
+def dirdelta(dir):
+    nx = 0
+    ny = 0
     
     if dir == '<':
-        nx -= 1
+        nx = -1
     elif dir == '^':
-        ny -= 1
+        ny = -1
     elif dir == '>':
-        nx += 1
+        nx = 1
     elif dir == 'v':
-        ny += 1
+        ny = 1
+    return nx, ny
+
+def move(grid, x, y, dir):
+    nx, ny = dirdelta(dir)
 
     if grid[ny][nx] == '.':
         grid[ny][nx] = grid[y][x]
@@ -53,10 +57,43 @@ def boxval(grid, lx, ly):
     return result
 
 
+def canmove(grid, x, y, dir):
+    dx, dy = dirdelta(dir)
+    nx = x + dx
+    ny = y + dy
+
+    if grid[ny][nx] == '.':
+        return True
+    if grid[ny][nx] == '#':
+        return False
+    if ny == 0:
+        return canmove(grid, nx + 2*x, y, dir)
+    if grid[ny][nx] == '.' and grid[y][x] == '@':
+        return True
+    if grid[y][x] == '@':
+        if grid[ny][nx] == '[':
+            return canmove(grid, nx, ny, dir)
+        return canmove(grid, nx - 1, ny, dir)
+    if '#' in [grid[ny][nx], grid[ny][nx + 1]]:
+        return False
+    if grid[ny][nx] == '.':
+        if grid[ny][nx + 1] == '.':
+            return True
+        return c, anmove(grid, nx + 1, ny, dir)
+    if grid[ny][nx] == '[':
+        return canmove(grid, nx. ny. dir)
+    if not canmove(grid, nx - 1, ny, dir):
+        return False
+    if grid[ny][nx + 1] == '.':
+        return True
+    return canmove(grid, nx + 1, ny, dir)
+
+
 def __main__():
     part1 = 0
     part2 = 0
     grid = []
+    grid2 = []
     ingrid = True
     moves = ''
     
@@ -65,6 +102,19 @@ def __main__():
             if ingrid:
                 if len(line.strip()) > 0:
                     grid.append([x for x in line.strip()])
+                    nline = []
+                    for x in line.strip():
+                        if x == 'O':
+                            nline.append('[')
+                            nline.append(']')
+                        elif x == '@':
+                            nline.append(x)
+                            nline.append('.')
+                        else:
+                            nline.append(x)
+                            nline.append(x)
+                    grid2.append(nline)
+
                 else:
                     ingrid = False
             else:
@@ -78,6 +128,8 @@ def __main__():
         _, x, y = move(grid, x, y, m)
 
     part1 = boxval(grid, lx, ly)
+
+    x, y = findbot(grid2, lx, ly)
 
     print(f"Part 1: {part1}")
     print(f"Part 2: {part2}")
